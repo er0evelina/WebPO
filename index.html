@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h1>To-Do Manager</h1>
+        <ul>
+            <li class="active">Profile</li>
+            <li>Tasks</li>
+            <li>Important</li>
+        </ul>
+        <hr>
+        <ul>
+            <li>Work</li>
+            <li>Groceries</li>
+            <li>Personal</li>
+            <li>Settings</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="task-list">
+            <h2>List</h2>
+            <table>
+                <tr>
+                    <td>Complete project 1</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Complete project 2</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Retrieve document</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Stuff</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Idk</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Idk2</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+                <tr>
+                    <td>Idk3</td>
+                    <td class="checkbox">☑</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="task-details" id="taskDetails">
+        <span class="close-btn" id="closeBtn">×</span>
+        <h3 id="taskTitle">Task Title</h3>
+        <p><strong>Status:</strong> <span id="taskStatus">Not started</span></p>
+        <p><strong>Due Date:</strong> <span id="taskDueDate">No deadline</span></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
