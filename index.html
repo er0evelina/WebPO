@@ -10,9 +10,9 @@
     <div class="sidebar">
         <h1>To-Do Manager</h1>
         <ul>
-            <li class="active">Profile</li>
-            <li>Tasks</li>
-            <li>Important</li>
+            <li class="active" data-page="profile">Profile</li>
+            <li data-page="tasks">Tasks</li>
+            <li data-page="important">Important</li>
         </ul>
         <hr>
         <ul>
@@ -24,48 +24,89 @@
     </div>
 
     <div class="main-content">
-        <div class="task-list">
-            <h2>List</h2>
-            <table>
-                <tr>
-                    <td>Complete project 1</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Complete project 2</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Retrieve document</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Stuff</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Idk</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Idk2</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-                <tr>
-                    <td>Idk3</td>
-                    <td class="checkbox">☑</td>
-                </tr>
-            </table>
+        <!-- Profile Page -->
+        <div class="page" id="profile-page">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <img src="images/mars.jpg" alt="Profile Picture" class="profile-pic">
+                    <h2 id="username">Elka</h2>
+                    <button id="edit-profile-btn">Edit Profile</button>
+                </div>
+                <div class="profile-info">
+                    <p><strong>Email:</strong> <span id="user-email">elka@gmail.com</span></p>
+                    <p><strong>Phone:</strong> <span id="user-phone">+1 (514) 123-4567</span></p>
+                    <p><strong>Location:</strong> <span id="user-location">Montreal, Canada</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Page -->
+        <div class="page" id="tasks-page" style="display: none;">
+            <div class="task-list">
+                <h2>All Tasks</h2>
+                <p>Yummy</p>
+            </div>
+        </div>
+
+        <!-- Important Page (Task List) -->
+        <div class="page" id="important-page" style="display: none;">
+            <div class="task-list">
+                <h2>Important Tasks</h2>
+                <div class="task-controls">
+                    <input type="text" id="new-task-input" placeholder="Add new task...">
+                    <button id="add-task-btn">Add</button>
+                    <button id="sort-tasks-btn">Sort A-Z</button>
+                    <button id="show-completed-btn">Show Completed</button>
+                </div>
+                <table id="task-table">
+                    <!-- Tasks will be added here dynamically -->
+                </table>
+            </div>
+        </div>
+        <div class="page" id="completed-page" style="display: none;">
+            <div class="task-list">
+                <h2>Completed Tasks</h2>
+                <table id="completed-table">
+                    <!-- Completed tasks will appear here -->
+                </table>
+            </div>
         </div>
     </div>
 
+    <!-- Task Details Modal -->
     <div class="overlay" id="overlay"></div>
-
     <div class="task-details" id="taskDetails">
         <span class="close-btn" id="closeBtn">×</span>
         <h3 id="taskTitle">Task Title</h3>
         <p><strong>Status:</strong> <span id="taskStatus">Not started</span></p>
         <p><strong>Due Date:</strong> <span id="taskDueDate">No deadline</span></p>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-edit-modal">×</span>
+            <h3>Edit Profile</h3>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="edit-username">Name:</label>
+                    <input type="text" id="edit-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email:</label>
+                    <input type="email" id="edit-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-phone">Phone:</label>
+                    <input type="tel" id="edit-phone">
+                </div>
+                <div class="form-group">
+                    <label for="edit-location">Location:</label>
+                    <input type="text" id="edit-location">
+                </div>
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>

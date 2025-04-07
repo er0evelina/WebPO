@@ -18,7 +18,7 @@ body {
 .sidebar h1 {
     font-size: 1.5rem;
     margin-bottom: 30px;
-    color: #313231;
+    color: #444;
 }
 
 .sidebar ul {
@@ -39,29 +39,93 @@ body {
 .sidebar hr {
     margin: 20px 0;
     border: none;
-    border-top: 1px solid #eeeeee;
+    border-top: 1px solid #eee;
 }
 
 .main-content {
     flex: 1;
     padding: 40px;
+}
+
+.page {
+    display: none;
+}
+
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+}
+
+.profile-header {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.profile-info {
+    line-height: 1.8;
+}
+
+#edit-profile-btn {
+    padding: 8px 16px;
+    background-color: #f1b2f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#edit-profile-btn:hover {
+    background-color: #f1b2f4;
 }
 
 .task-list {
-    width: 80%;
     max-width: 600px;
+    margin: 0 auto;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
 }
 
-.task-list h2 {
-    margin-top: 0;
-    color: #444;
+.task-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#new-task-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#add-task-btn, #sort-tasks-btn {
+    padding: 8px 16px;
+    background-color: #f1b2f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#add-task-btn:hover, #sort-tasks-btn:hover {
+    background-color: #f1b2f4;
 }
 
 table {
@@ -86,7 +150,7 @@ td:last-child {
     font-size: 1.2rem;
 }
 
-.task-details {
+.task-details, .modal {
     display: none;
     position: fixed;
     top: 50%;
@@ -100,7 +164,11 @@ td:last-child {
     width: 300px;
 }
 
-.task-details h3 {
+.modal-content {
+    position: relative;
+}
+
+.task-details h3, .modal h3 {
     margin-top: 0;
     color: #444;
 }
@@ -132,4 +200,67 @@ td:last-child {
 .active {
     font-weight: bold;
     color: #7f40d1;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#profile-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #f1b2f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#profile-form button:hover {
+    background-color: #f1b2f4;
+}
+
+.completed-task {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.edit-task-form {
+    margin-top: 15px;
+}
+
+.edit-task-form select, 
+.edit-task-form input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.edit-task-form button {
+    padding: 8px 16px;
+    background-color: #f1b2f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.edit-task-form button.cancel {
+    background-color: #888;
 }
