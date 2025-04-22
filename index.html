@@ -11,15 +11,11 @@
         <h1>To-Do Manager</h1>
         <ul>
             <li class="active" data-page="profile">Profile</li>
-            <li data-page="tasks">Tasks</li>
-            <li data-page="important">Important</li>
+            <li data-page="important">Task list</li>
         </ul>
         <hr>
         <ul>
-            <li>Work</li>
-            <li>Groceries</li>
-            <li>Personal</li>
-            <li>Settings</li>
+            <!-- <li>Work</li> -->
         </ul>
     </div>
 
@@ -40,13 +36,6 @@
             </div>
         </div>
 
-        <!-- Tasks Page -->
-        <div class="page" id="tasks-page" style="display: none;">
-            <div class="task-list">
-                <h2>All Tasks</h2>
-                <p>Empty for now _(:Ⅰ」∠)_</p>
-            </div>
-        </div>
 
         <!-- Important Page (Task List) -->
         <div class="page" id="important-page" style="display: none;">
@@ -59,7 +48,11 @@
                     <button id="show-completed-btn">Show Completed</button>
                 </div>
                 <table id="task-table">
-                    
+                    <tr>
+                        <th>Task</th>
+                        <th>Important</th>
+                        <th>Status</th>
+                    </tr>
                 </table>
             </div>
         </div>

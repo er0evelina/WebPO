@@ -264,3 +264,26 @@ td:last-child {
 .edit-task-form button.cancel {
     background-color: #888;
 }
+
+.star {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #ccc;
+    transition: all 0.2s;
+}
+
+.star.important {
+    color: gold;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.task-table th {
+    text-align: left;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.task-table td {
+    padding: 12px 0;
+    vertical-align: middle;
+}

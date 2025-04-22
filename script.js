@@ -34,9 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     //avtive tasks
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [
-        { title: 'Work', status: 'In progress', dueDate: '2025-03-28', completed: false },
-        { title: 'Groceries', status: 'Not started', dueDate: '2025-03-25', completed: false },
-        { title: 'Personal', status: 'Completed', dueDate: '2025-03-30', completed: false }
+        { title: 'Finish project', status: 'In progress', dueDate: '2025-03-28', completed: false, important: true },
+        { title: 'Buy groceries', status: 'Not started', dueDate: '2025-03-25', completed: true, important: false },
+        { title: 'Call mom', status: 'Completed', dueDate: '2025-03-30', completed: false, important: true }
     ];
     //complete tasks
     let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
@@ -89,38 +89,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //active task list
     function renderTasks() {
-        taskTable.innerHTML = '';//clear table before refresh
+        taskTable.innerHTML = `
+            <tr>
+                <th>Done</th>
+                <th>Task</th>
+                <th>Important</th>
+                <th>Status</th>
+            </tr>
+        `;
+
         //only show active tasks
-        tasks.filter(task => !task.completed).forEach((task, index) => {
-            const row = document.createElement('tr');//add row in table
+        const sortedTasks = [...tasks].sort((a, b) => {
+            if (a.important !== b.important) return a.important ? -1 : 1;
+            if (a.completed !== b.completed) return a.completed ? 1 : -1;
+            return 0;
+        });
+    
+        sortedTasks.forEach((task, index) => {
+            const row = document.createElement('tr');
             row.dataset.index = index;
-            //cell with task name
-            const titleCell = document.createElement('td');
-            titleCell.textContent = task.title;
-            if (task.completed) {
-                titleCell.classList.add('completed-task');
-            }
-            //cell with checkbox
+            if (task.completed) row.classList.add('completed-task');
+            
+            //checkbox cell
             const checkboxCell = document.createElement('td');
-            checkboxCell.className = 'checkbox';
-            checkboxCell.textContent = task.completed ? '☑' : '☐';
-            //adding cells to row
-            row.appendChild(titleCell);
-            row.appendChild(checkboxCell);
-            taskTable.appendChild(row);//add row to table
-            
-            //add click event to show task details
-            row.addEventListener('click', function(e) {
-                //to ignore clicks on checkbox
-                if (e.target.classList.contains('checkbox')) return;
-                showTaskDetails(index, false);
-            });
-            
-            //checkbox click event
-            checkboxCell.addEventListener('click', function() {
+            const checkbox = document.createElement('span');
+            checkbox.className = 'checkbox';
+            checkbox.textContent = task.completed ? '☑' : '☐';
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
                 toggleTaskCompletion(index);
             });
+            checkboxCell.appendChild(checkbox);
+            
+            //task name cell
+            const titleCell = document.createElement('td');
+            titleCell.textContent = task.title;
+            
+            //star cell (important/not important)
+            const starCell = document.createElement('td');
+            const star = document.createElement('span');
+            star.className = `star ${task.important ? 'important' : ''}`;
+            star.innerHTML = '★';
+            star.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleTaskImportance(index);
+            });
+            starCell.appendChild(star);
+            
+            //status cell
+            const statusCell = document.createElement('td');
+            statusCell.textContent = task.status;
+            
+            row.appendChild(checkboxCell);
+            row.appendChild(titleCell);
+            row.appendChild(starCell);
+            row.appendChild(statusCell);
+            taskTable.appendChild(row);
+            
+        
+            row.addEventListener('click', () => {
+                showTaskDetails(index);
+            });
         });
+    }
+    
+    //switch task status
+    function toggleTaskCompletion(index) {
+        tasks[index].completed = !tasks[index].completed;
+        if (tasks[index].completed) {
+            tasks[index].status = 'Completed';
+        }
+        saveData();
+        renderTasks();
     }
     
     //completed tasks list
@@ -157,7 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
+    function toggleTaskImportance(index) {
+        tasks[index].important = !tasks[index].important;
+        saveData();
+        renderTasks();
+    }
+
     //open modal with task details
     function showTaskDetails(index, isCompleted) {
         const taskList = isCompleted ? [...completedTasks, ...tasks.filter(t => t.completed)] : tasks;
@@ -225,20 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
         taskDetails.style.display = 'block';
     }
     
-    //switch task status
-    function toggleTaskCompletion(index) {
-        tasks[index].completed = !tasks[index].completed;//inverts completion status
-        //if completed
-        if (tasks[index].completed) {
-            tasks[index].status = 'Completed';
-            completedTasks.push(tasks[index]);//add into completed list
-            tasks.splice(index, 1);//remove from active
-        }
-        //save and refresh
-        saveData();
-        renderTasks();
-        renderCompletedTasks();
+    function saveData() {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
     }
+
+ 
+
     //return task into active list
     function uncompleteTask(index) {
         const task = completedTasks[index];
