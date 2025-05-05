@@ -44,15 +44,26 @@
                 <div class="task-controls">
                     <input type="text" id="new-task-input" placeholder="Add new task...">
                     <button id="add-task-btn">Add</button>
-                    <button id="sort-tasks-btn">Sort A-Z</button>
-                    <button id="show-completed-btn">Show Completed</button>
+                    <div class="sort-container">
+                        <button id="sort-btn">Sort Tasks</button>
+                        <div class="sort-dropdown" id="sort-dropdown">
+                            <div data-sort="alphabetical">A → Z</div>
+                            <div data-sort="reverse-alphabetical">Z → A</div>
+                            <div data-sort="date">Date ↑</div>
+                            <div data-sort="reverse-date">Date ↓</div>
+                        </div>
+                    </div>
+                    <!--<button id="sort-tasks-btn">Sort</button>-->
+                    <button id="show-completed-btn">Filter tasks</button>
                 </div>
                 <table id="task-table">
                     <tr>
+                        <th>Done</th>
                         <th>Task</th>
                         <th>Important</th>
                         <th>Status</th>
                     </tr>
+                    
                 </table>
             </div>
         </div>
