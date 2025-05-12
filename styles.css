@@ -11,6 +11,18 @@ body {
     gap: 10px;
     margin-top: 20px;
 }
+.delete-btn {
+    color: #ff4444;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 10px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+}
 
 .form-actions button {
     flex: 1;
