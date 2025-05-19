@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="sidebar">
+    <!--<div class="sidebar">
         <h1>To-Do Manager</h1>
         <ul>
             <li class="active" data-page="profile">Profile</li>
@@ -15,9 +15,9 @@
         </ul>
         <hr>
         <ul>
-            <!-- <li>Work</li> -->
+             <li>Work</li> 
         </ul>
-    </div>
+    </div> -->
 
     <div class="main-content">
         <!-- Profile Page -->
@@ -53,8 +53,15 @@
                             <div data-sort="reverse-date">Date ↓</div>
                         </div>
                     </div>
-                    <!--<button id="sort-tasks-btn">Sort</button>-->
-                    <button id="show-completed-btn">Filter tasks</button>
+                    <div class="filter-container">
+                        <button id="filter-btn">Filter Tasks</button>
+                        <div class="filter-dropdown" id="filter-dropdown">
+                            <div data-filter="all">Show all</div>
+                            <div data-filter="not-started">Not started</div>
+                            <div data-filter="in-progress">In progress</div>
+                            <div data-filter="completed">Completed</div>
+                        </div>
+                    </div>
                 </div>
                 <table id="task-table">
                     <tr>
@@ -80,7 +87,7 @@
     <!-- Task Details Modal -->
     <div class="overlay" id="overlay"></div>
     <div class="task-details" id="taskDetails">
-        <span class="close-btn" id="closeBtn">×</span>
+        <span class="close-btn" id="closeBtn"></span>
         <h3 id="taskTitle">Task Title</h3>
         <p><strong>Status:</strong> <span id="taskStatus">Not started</span></p>
         <p><strong>Due Date:</strong> <span id="taskDueDate">No deadline</span></p>

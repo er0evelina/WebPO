@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const addTaskBtn = document.getElementById('add-task-btn');
     const sortBtn = document.getElementById('sort-btn');
     const sortDropdown = document.getElementById('sort-dropdown');
+    const filterBtn = document.getElementById('filter-btn');
+    const filterDropdown = document.getElementById('filter-dropdown');
+    let currentFilter = 'all';
     
     // Данные
     let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
@@ -30,17 +33,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function init() {
         updateProfileDisplay();
         renderTasks();
+        // При загрузке данных добавляем ID если их нет
         if (tasks.length > 0 && !tasks[0].id) {
-            tasks = tasks.map((task, index) => ({ ...task, id: index }));
+            tasks = tasks.map(task => ({ 
+                ...task, 
+                id: Date.now() + Math.floor(Math.random() * 1000) 
+            }));
             saveData();
         }
+        setupFiltering();
         setupSorting();
-        showPage('profile');
+        showPage('important');
     }
 
     function saveData() {
+
+        const dataToSave = tasks.map(task => {
+            if (task.completed) {
+                return { ...task, important: false };
+            }
+            return task;
+        });
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('tasks', JSON.stringify(dataToSave));
     }
 
     function showPage(pageId) {
@@ -63,25 +78,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderTasks() {
         taskTable.innerHTML = `
             <tr>
-                <th>Done</th>
-                <th>Task</th>
-                <th>Important</th>
-                <th>Status</th>
-                <th>Action</th>
+               
             </tr>
         `;
     
-        // Сначала важные, затем невыполненные, затем выполненные
-        const sortedTasks = [...tasks].sort((a, b) => {
-            // Важные задачи всегда вверху
+        let filteredTasks = [...tasks];
+        switch(currentFilter) {
+            case 'not-started':
+                filteredTasks = tasks.filter(task => task.status === 'Not started');
+                break;
+            case 'in-progress':
+                filteredTasks = tasks.filter(task => task.status === 'In progress');
+                break;
+            case 'completed':
+                filteredTasks = tasks.filter(task => task.status === 'Completed' || task.completed);
+                break;
+        }
+
+        const sortedTasks = [...filteredTasks].sort((a, b) => {
+            
             if (a.important !== b.important) {
                 return a.important ? -1 : 1;
             }
-            // Выполненные задачи всегда внизу
+            
             if (a.completed !== b.completed) {
                 return a.completed ? 1 : -1;
             }
-            // Если метод сортировки выбран - применяем его
+            
             if (currentSortMethod) {
                 switch(currentSortMethod) {
                     case 'alphabetical':
@@ -96,9 +119,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return 0;
         });
-        sortedTasks.forEach((task, index) => {
+
+        sortedTasks.forEach(task => {
             const row = document.createElement('tr');
-            if (task.completed) row.classList.add('completed-task');
+            if (task.completed) {
+                task.important = false;
+            }
+            if (task.completed || task.status === 'Completed') {
+            row.classList.add('completed-task');
+            task.completed = true;
+        }
             
             row.innerHTML = `
                 <td><span class="checkbox">${task.completed ? '☑' : '☐'}</span></td>
@@ -123,11 +153,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 deleteTask(task.id);
             });
 
-            row.addEventListener('click', () => showTaskDetails(task.id || index));
+            row.addEventListener('click', (e) => {
+                // Проверяем, был ли клик по кнопке удаления или другим интерактивным элементам
+                if (e.target.classList.contains('delete-btn') || 
+                    e.target.classList.contains('checkbox') || 
+                    e.target.classList.contains('star')) {
+                    return;
+                }
+                showTaskDetails(task.id);
+            });
             taskTable.appendChild(row);
         });
     }
     
+    function setupFiltering() {
+        filterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterDropdown.classList.toggle('show');
+        });
+
+        document.querySelectorAll('.filter-dropdown div').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentFilter = option.dataset.filter;
+                renderTasks();
+                filterDropdown.classList.remove('show');
+            });
+        });
+    }
 
     function deleteTask(taskId) {
         if (confirm('Are you sure you want to delete this task?')) {
@@ -145,9 +198,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function toggleTaskCompletion(taskId) {
-        const task = tasks.find(t => t.id === taskId) || tasks[taskId];
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
         task.completed = !task.completed;
-        if (task.completed) task.status = 'Completed';
+        if (task.completed) {
+            task.status = 'Completed';
+            task.important = false;
+        } else {
+            task.status = 'Not started';
+        }
+        
         saveData();
         renderTasks();
     }
@@ -159,9 +220,13 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTasks();
     }
 
-    function showTaskDetails(index) {
-        const task = tasks[index];
-        
+    function showTaskDetails(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) {
+            console.error('Task not found with ID:', taskId);
+            return;
+        }
+
         taskDetails.innerHTML = `
             <span class="close-btn" id="closeTaskDetails"></span>
             <h3>${task.title}</h3>
@@ -184,11 +249,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.getElementById('editTaskForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            tasks[index] = {
-                ...tasks[index],
-                status: document.getElementById('edit-status').value,
-                dueDate: document.getElementById('edit-due-date').value || 'No deadline'
-            };
+            const newStatus = document.getElementById('edit-status').value;
+            const newDueDate = document.getElementById('edit-due-date').value || 'No deadline';
+            Object.assign(task, {
+                status: newStatus,
+                dueDate: newDueDate,
+                completed: newStatus === 'Completed'
+            });
             saveData();
             closeModal();
             renderTasks();
@@ -222,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function addTask(title) {
         if (!title.trim()) return;
         tasks.push({
-            id: Date.now(),
+            id: Date.now() + Math.floor(Math.random() * 1000), // Более надежный ID
             title: title,
             status: 'Not started',
             dueDate: 'No deadline',
@@ -238,6 +305,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.sort-container')) {
             sortDropdown.classList.remove('show');
+        }
+
+        if (!e.target.closest('.filter-container')) {
+            filterDropdown.classList.remove('show');
         }
     });
 

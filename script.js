@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const newTaskInput = document.getElementById('new-task-input');
     const addTaskBtn = document.getElementById('add-task-btn');
     const sortTasksBtn = document.getElementById('sort-btn');
+    const sortDropdown = document.getElementById('sort-dropdown');
+    let currentSortMethod = null;
 
 
     let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
@@ -44,6 +46,13 @@ document.addEventListener('DOMContentLoaded', function() {
         updateProfileDisplay();
         renderTasks();
         showPage('profile');
+        setupSorting();
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.sort-container')) {
+                sortDropdown.classList.remove('show');
+            }
+        });
     }
 
     function saveData() {
@@ -80,17 +89,28 @@ document.addEventListener('DOMContentLoaded', function() {
             </tr>
         `;
         
+       
+        
         // Сохраняем оригинальные индексы перед сортировкой
         const tasksWithIndex = tasks.map((task, index) => ({ ...task, originalIndex: index }));
         
+        
+
         const sortedTasks = tasksWithIndex.sort((a, b) => {
             if (a.important !== b.important) return a.important ? -1 : 1;
             if (a.completed !== b.completed) return a.completed ? 1 : -1;
             return a.title.localeCompare(b.title);
         });
+
+        if (currentSortMethod) {
+            sortTasks(currentSortMethod);
+            return; // sortTasks сам вызовет renderTasks()
+        }
     
         sortedTasks.forEach((task) => {
             const row = document.createElement('tr');
+
+
             if (task.completed) row.classList.add('completed-task');
             
             // Чекбокс выполнения
@@ -132,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
             row.addEventListener('click', () => showTaskDetails(task.originalIndex)); // Оригинальный индекс
             
             taskTable.appendChild(row);
+
+            
         });
     }
 
@@ -218,7 +240,67 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('closeTaskDetails').addEventListener('click', closeModal);
     }
     
+    function setupSorting() {
+        const sortOptions = document.querySelectorAll('.sort-dropdown div');
+        
+        sortOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const sortType = this.dataset.sort;
+                currentSortMethod = sortType;
+                sortTasks(sortType); // Вызываем функцию сортировки
+                sortDropdown.classList.remove('show');
+            });
+        });
+    }
 
+    function sortTasks(sortType) {
+
+        //console.log('Sorting by:', sortType);
+        //console.log('Before sorting:', tasks);
+        
+        
+        switch(sortType) {
+
+            
+            case 'alphabetical':
+                tasks.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'reverse-alphabetical':
+                tasks.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+            case 'date':
+                tasks.sort((a, b) => dateSortComparator(a, b, false));
+                break;
+            case 'reverse-date':
+                tasks.sort((a, b) => dateSortComparator(a, b, true));
+                break;
+        }
+        //console.log('After sorting:', tasks);
+        
+        saveData();
+        renderTasks();
+    }
+    
+    function dateSortComparator(a, b, reverse = false) {
+        if (a.dueDate === 'No deadline' && b.dueDate === 'No deadline') return 0;
+        if (a.dueDate === 'No deadline') return reverse ? -1 : 1;
+        if (b.dueDate === 'No deadline') return reverse ? 1 : -1;
+        
+        const dateA = new Date(a.dueDate);
+        const dateB = new Date(b.dueDate);
+        return reverse ? dateB - dateA : dateA - dateB;
+    }
+
+    function toggleSortDropdown(e) {
+        e.stopPropagation();
+        sortDropdown.classList.toggle('show');
+    }
+    
+    function closeSortDropdownOutside() {
+        sortDropdown.classList.remove('show');
+    }
+    
    
     sidebarItems.forEach(item => {
         item.addEventListener('click', () => showPage(item.dataset.page));
@@ -273,6 +355,11 @@ document.addEventListener('DOMContentLoaded', function() {
     newTaskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTask(newTaskInput.value);
     });
+
+    sortTasksBtn.addEventListener('click', toggleSortDropdown);
+    document.addEventListener('click', closeSortDropdownOutside);
+
+   
 
     sortTasksBtn.addEventListener('click', () => {
         tasks.sort((a, b) => a.title.localeCompare(b.title));
